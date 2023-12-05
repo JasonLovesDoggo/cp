@@ -60,8 +60,8 @@ function Projects() {
                             isBlog={false}
                             title="Scavenger"
                             description="A scavenger hunt website designed to prevent any form of cheating and RNG-based wins on a typical scavenger hunt. It was created in Django uses a Oauth 2.0 system with the main mld (metropolis) site to handle authentication."
-                            ghLink="https://github.com/wlmac/scavenger/tree/2022"
-                            demoLink="https://scavenger2022.maclyonsden.com"
+                            ghLink="https://github.com/wlmac/scavenger"
+                            demoLink="https://scavenger.maclyonsden.com"
                         />
                     </Col>
 
