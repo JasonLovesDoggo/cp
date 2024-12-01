@@ -6,7 +6,9 @@ class Solution:
                 return False
             while l < r:
                 if s[l] != s[r]:
-                    return IsPalindrome(l + 1, r, c + 1) or IsPalindrome(l, r - 1, c + 1)
+                    return IsPalindrome(l + 1, r, c + 1) or IsPalindrome(
+                        l, r - 1, c + 1
+                    )
                 l += 1
                 r -= 1
             return True
@@ -21,7 +23,7 @@ class Solution:
 
         while left < right:
             if s[left] != s[right]:
-                skipL, skipR = s[left + 1:right + 1], s[left:right]
+                skipL, skipR = s[left + 1 : right + 1], s[left:right]
                 return skipL == skipL[::-1] or skipR == skipR[::-1]
             left, right = left + 1, right - 1
         return True

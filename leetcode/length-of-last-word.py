@@ -3,4 +3,3 @@ class Solution:
         s = s.rstrip()
         s = s.split(" ")
         return len(s[-1])
-        
