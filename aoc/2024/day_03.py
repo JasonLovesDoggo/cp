@@ -41,13 +41,13 @@ def part_two(data=data):
     for result in results:
         if result == "don't()":
             ignore_result = True
+            continue
         elif result == "do()":
             ignore_result = False
+            continue
         if ignore_result:
             continue
         ints = extract_ints(result)
-        if not ints:
-            continue
         total += ints[0] * ints[1]
     return total
 
