@@ -19,10 +19,8 @@ MXMXAXMASX"""
         # Prepare the data
         data = [list(row) for row in raw_data.splitlines()]
 
-        # Create the grid with proper scaling
         grid = self.create_grid(data)
 
-        # Center the grid
         grid.center()
 
         # Scale to fit screen, with a bit of padding
@@ -44,12 +42,10 @@ MXMXAXMASX"""
         match_num = Integer(0, font_size=24).next_to(matches, RIGHT)
         self.add(match_num)
 
-        # Find and highlight XMAS patterns
         xmas_count = self.find_xmas_patterns(
             data, grid, search_text, matches, match_num
         )
 
-        # Update final count
         final_count_text = Text(
             f"Total XMAS Patterns Found: {xmas_count}", font_size=24
         ).to_edge(DOWN)
@@ -59,13 +55,11 @@ MXMXAXMASX"""
     def create_grid(self, data: List[List[str]]) -> VGroup:
         """Create a grid of squares with letters."""
         grid = VGroup()
-        for i, row in enumerate(data):  # No need to reverse data
+        for i, row in enumerate(data):
             for j, letter in enumerate(row):
-                # Create square
                 square = Square(side_length=0.8).move_to(
-                    RIGHT * j + UP * i  # Use UP * i for correct orientation
+                    RIGHT * j + UP * i  # Uses UP * i for correct orientation
                 )
-                # Create text
                 text = Text(letter, font_size=24).move_to(square)
                 grid.add(square, text)
         return grid
@@ -82,7 +76,6 @@ MXMXAXMASX"""
         grid_size = len(data)
         xmas_count = 0
 
-        # Directions to check: right, down, diagonal down-right, diagonal down-left
         directions = [
             # (delta row, delta col)
             (0, 1),  # horizontal
@@ -102,7 +95,6 @@ MXMXAXMASX"""
             )
             for i in range(grid_size):
                 for j in range(grid_size):
-                    # Create yellow highlight for current cell
                     current_cell_index = (i * grid_size + j) * 2
                     current_square = grid[current_cell_index]
                     self.play(
@@ -133,7 +125,6 @@ MXMXAXMASX"""
                                     stroke_width=3,
                                 )
 
-                                # Increment and update match count
                                 xmas_count += 1
                                 self.play(
                                     Create(pattern_polygon),
@@ -173,11 +164,10 @@ MXMXAXMASX"""
         """Get the VGroup of squares for a specific pattern."""
         pattern_squares = VGroup()
         for k in range(4):
-            # Calculate index in the grid (remember grid contains both squares and text)
             row = start_row + k * delta_row
             col = start_col + k * delta_col
-            grid_index = (row * grid_size + col) * 2  # No need to add +1
-            pattern_squares.add(grid[grid_index])  # Add the square, not the text
+            grid_index = (row * grid_size + col) * 2
+            pattern_squares.add(grid[grid_index])
         return pattern_squares
 
     def get_pattern_vertices(
