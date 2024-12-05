@@ -17,7 +17,6 @@ MXMXAXMASX"""
 
         # Prepare the data
         data = [list(row) for row in raw_data.splitlines()]
-        grid_size = len(data)
 
         # Create the grid with proper scaling
         square_size = 0.4
@@ -27,17 +26,14 @@ MXMXAXMASX"""
         grid.center()
         grid.scale(min(config.frame_width / grid.width, config.frame_height / grid.height) * 0.9)
 
-        # self.play(Create(grid))
         self.add(grid)
 
         # Create text for tracking search progress
         search_text = Text("Searching...", font_size=24).to_edge(UP)
-        # self.play(Create(search_text))
         self.add(search_text)
 
         # Create text for total matches
         match_text = Text("Matches: 0", font_size=24).next_to(search_text, DOWN)
-        # self.play(Create(match_text))
         self.add(match_text)
 
         # Find and highlight XMAS patterns
@@ -94,11 +90,10 @@ MXMXAXMASX"""
 
         for word_index, word in enumerate(target_words):
             # Update search text for current word
-            self.play(
-                search_text.animate.become(
-                    Text(f"Searching for: {word}", font_size=24).to_edge(UP)
+            search_text.become(
+                    Text(f"Searching for: {word}", font_size=24).to_edge(LEFT).to_edge(UP)
                 )
-            )
+
 
             for i in range(grid_size):
                 for j in range(grid_size):
@@ -113,7 +108,6 @@ MXMXAXMASX"""
                         # Check if pattern fits within grid
                         if (0 <= i + dr * 3 < grid_size and
                                 0 <= j + dc * 3 < grid_size):
-
                             # Check if current position matches pattern
                             if self.check_pattern(data, i, j, dr, dc, word):
                                 # Highlight the pattern
@@ -121,8 +115,11 @@ MXMXAXMASX"""
                                     grid, i, j, dr, dc, grid_size
                                 )
 
-                                # Create a green rectangle ONLY around the pattern
-                                rectangle = SurroundingRectangle(pattern_squares, color=GREEN, buff=0.1)
+                                # Create a green rectangle around the pattern
+                                rectangle = VGroup(*[
+                                    SurroundingRectangle(square, color=GREEN, buff=0.3)
+                                    for square in pattern_squares
+                                ])
 
                                 # Increment and update match count
                                 xmas_count += 1
@@ -136,10 +133,9 @@ MXMXAXMASX"""
                                 # Wait for 0.05 second to show the match
                                 self.wait(0.05)
 
-
-
-                    # Remove the yellow highlight
-                    self.play(FadeOut(highlight))
+                                # Remove the rectangle
+                                self.play(FadeOut(rectangle))
+                    self.remove(highlight)
 
         return xmas_count
 
@@ -170,7 +166,7 @@ MXMXAXMASX"""
             # Calculate index in the grid (remember grid contains both squares and text)
             row = start_row + k * delta_row
             col = start_col + k * delta_col
-            grid_index = (row * grid_size + col) * 2  # Get the square
+            grid_index = (row * grid_size + col) * 2 + 1  # +1 to get text
             pattern_squares.add(grid[grid_index])
         return pattern_squares
 
