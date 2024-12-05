@@ -1,6 +1,7 @@
 from manim import *
 from typing import List
 
+
 class SearchVisualization(Scene):
     def construct(self):
         # Input data
@@ -25,8 +26,8 @@ MXMXAXMASX"""
             background_line_style={
                 "stroke_color": BLUE,
                 "stroke_width": 1,
-                "stroke_opacity": 0.2
-            }
+                "stroke_opacity": 0.2,
+            },
         )
         self.add(plane)
 
@@ -37,7 +38,10 @@ MXMXAXMASX"""
         grid.center()
 
         # Scale to fit screen, with a bit of padding
-        grid.scale(min(config.frame_width / grid.width, config.frame_height / grid.height) * 0.8)
+        grid.scale(
+            min(config.frame_width / grid.width, config.frame_height / grid.height)
+            * 0.8
+        )
 
         self.add(grid)
 
@@ -53,38 +57,39 @@ MXMXAXMASX"""
         self.add(match_num)
 
         # Find and highlight XMAS patterns
-        xmas_count = self.find_xmas_patterns(data, grid,
-                                             search_text, matches, match_num)
+        xmas_count = self.find_xmas_patterns(
+            data, grid, search_text, matches, match_num
+        )
 
         # Update final count
-        final_count_text = Text(f"Total XMAS Patterns Found: {xmas_count}",
-                                font_size=24).to_edge(DOWN)
-        self.play(
-            FadeOut(search_text),
-            Create(final_count_text)
-        )
+        final_count_text = Text(
+            f"Total XMAS Patterns Found: {xmas_count}", font_size=24
+        ).to_edge(DOWN)
+        self.play(FadeOut(search_text), Create(final_count_text))
         self.wait(0.5)
 
     def create_grid(self, data: List[List[str]]) -> VGroup:
         """Create a grid of squares with letters."""
         grid = VGroup()
-        for i, row in enumerate(reversed(data)):  # Reverse to match NumberPlane coordinates
+        for i, row in enumerate(data):  # No need to reverse data
             for j, letter in enumerate(row):
                 # Create square
                 square = Square(side_length=0.8).move_to(
-                    RIGHT * j + UP * i
+                    RIGHT * j + UP * i  # Use UP * i for correct orientation
                 )
                 # Create text
                 text = Text(letter, font_size=24).move_to(square)
                 grid.add(square, text)
         return grid
 
-    def find_xmas_patterns(self,
-                           data: List[List[str]],
-                           grid: VGroup,
-                           search_text: Text,
-                           matches: Text,
-                           matches_num: Text) -> int:
+    def find_xmas_patterns(
+        self,
+        data: List[List[str]],
+        grid: VGroup,
+        search_text: Text,
+        matches: Text,
+        matches_num: Text,
+    ) -> int:
         """Find and highlight all XMAS patterns."""
         grid_size = len(data)
         xmas_count = 0
@@ -92,10 +97,10 @@ MXMXAXMASX"""
         # Directions to check: right, down, diagonal down-right, diagonal down-left
         directions = [
             # (delta row, delta col)
-            (0, 1),   # horizontal
-            (1, 0),   # vertical
-            (1, 1),   # diagonal down-right
-            (1, -1)   # diagonal down-left
+            (0, 1),  # horizontal
+            (1, 0),  # vertical
+            (1, 1),  # diagonal down-right
+            (1, -1),  # diagonal down-left
         ]
 
         # Words to search for (both forward and backward)
@@ -116,52 +121,47 @@ MXMXAXMASX"""
 
                     for dr, dc in directions:
                         # Check if pattern fits within grid
-                        if (0 <= i + dr * 3 < grid_size and
-                                0 <= j + dc * 3 < grid_size):
+                        if 0 <= i + dr * 3 < grid_size and 0 <= j + dc * 3 < grid_size:
                             # Check if current position matches pattern
                             if self.check_pattern(data, i, j, dr, dc, word):
-                                # Highlight the pattern
+                                # Highlight the pattern with a polygon (surrounding the squares)
                                 pattern_squares = self.get_pattern_squares(
                                     grid, i, j, dr, dc, grid_size
                                 )
 
-                                # Create a green polygon that connects the letters diagonally
-                                pattern_vertices = [square.get_center() for square in pattern_squares]
+                                # Get the corner points of the surrounding rectangles in the correct order
+                                pattern_vertices = self.get_pattern_vertices(
+                                    dr, dc, pattern_squares
+                                )
 
-                                # Rearrange vertices to create a polygon with diagonals
-                                polygon_vertices = [
-                                    pattern_vertices[0],
-                                    pattern_vertices[1],
-                                    pattern_vertices[3],
-                                    pattern_vertices[2]
-                                ]
-
-                                pattern_polygon = Polygon(*polygon_vertices,
-                                                          color=GREEN,
-                                                          fill_opacity=0.2,
-                                                          stroke_width=3)
+                                # Create the polygon
+                                pattern_polygon = Polygon(
+                                    *pattern_vertices,
+                                    color=GREEN,
+                                    fill_opacity=0.2,
+                                    stroke_width=3,
+                                )
 
                                 # Increment and update match count
                                 xmas_count += 1
                                 self.play(
                                     Create(pattern_polygon),
-                                    matches_num.animate.set_value(xmas_count)
+                                    matches_num.animate.set_value(xmas_count),
                                 )
 
-                                # Wait for 0.05 second to show the match
-                                self.wait(0.001)
-
-                                # Remove the polygon
-                                self.play(FadeOut(pattern_polygon))
+                                pattern_polygon.set_opacity(0.3)
 
         return xmas_count
 
-    def check_pattern(self, data: List[List[str]],
-                      start_row: int,
-                      start_col: int,
-                      delta_row: int,
-                      delta_col: int,
-                      target_word: str) -> bool:
+    def check_pattern(
+        self,
+        data: List[List[str]],
+        start_row: int,
+        start_col: int,
+        delta_row: int,
+        delta_col: int,
+        target_word: str,
+    ) -> bool:
         """Check if a specific pattern exists."""
         for k in range(4):
             row = start_row + k * delta_row
@@ -170,20 +170,71 @@ MXMXAXMASX"""
                 return False
         return True
 
-    def get_pattern_squares(self,
-                            grid: VGroup,
-                            start_row: int,
-                            start_col: int,
-                            delta_row: int,
-                            delta_col: int,
-                            grid_size: int) -> VGroup:
+    def get_pattern_squares(
+        self,
+        grid: VGroup,
+        start_row: int,
+        start_col: int,
+        delta_row: int,
+        delta_col: int,
+        grid_size: int,
+    ) -> VGroup:
         """Get the VGroup of squares for a specific pattern."""
         pattern_squares = VGroup()
         for k in range(4):
             # Calculate index in the grid (remember grid contains both squares and text)
             row = start_row + k * delta_row
             col = start_col + k * delta_col
-            grid_index = (row * grid_size + col) * 2 + 1  # +1 to get text
-            pattern_squares.add(grid[grid_index])
+            grid_index = (row * grid_size + col) * 2  # No need to add +1
+            pattern_squares.add(grid[grid_index])  # Add the square, not the text
         return pattern_squares
 
+    def get_pattern_vertices(
+        self, delta_row: int, delta_col: int, pattern_squares: List[Square]
+    ) -> List[np.ndarray]:
+        """Get the corner points of the surrounding rectangles in the correct order."""
+        pattern_vertices = []
+
+        if delta_row == 0:  # Horizontal
+            pattern_vertices.extend(
+                [
+                    pattern_squares[0].get_corner(UL),
+                    pattern_squares[3].get_corner(UR),
+                    pattern_squares[3].get_corner(DR),
+                    pattern_squares[0].get_corner(DL),
+                ]
+            )
+        elif delta_col == 0:  # Vertical
+            pattern_vertices.extend(
+                [
+                    pattern_squares[0].get_corner(DL),
+                    pattern_squares[0].get_corner(DR),
+                    pattern_squares[3].get_corner(UR),
+                    pattern_squares[3].get_corner(UL),
+                ]
+            )
+        # check if diaonally going right to left
+        elif delta_col == -1:  # Diagonal left to right
+            pattern_vertices.extend(
+                [
+                    pattern_squares[0].get_corner(UR),
+                    pattern_squares[0].get_corner(DR),
+                    pattern_squares[0].get_corner(DL),
+                    pattern_squares[-1].get_corner(DL),
+                    pattern_squares[-1].get_corner(UL),
+                    pattern_squares[-1].get_corner(UR),
+                ]
+            )
+        else:  # Diagonal Left to Right
+            pattern_vertices.extend(
+                [
+                    pattern_squares[0].get_corner(DR),
+                    pattern_squares[0].get_corner(DL),
+                    pattern_squares[0].get_corner(UL),
+                    pattern_squares[-1].get_corner(UL),
+                    pattern_squares[-1].get_corner(UR),
+                    pattern_squares[-1].get_corner(DR),
+                ]
+            )
+
+        return pattern_vertices
