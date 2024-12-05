@@ -19,18 +19,6 @@ MXMXAXMASX"""
         # Prepare the data
         data = [list(row) for row in raw_data.splitlines()]
 
-        # Create NumberPlane instead of manual grid positioning
-        plane = NumberPlane(
-            x_range=[0, len(data[0]), 1],
-            y_range=[0, len(data), 1],
-            background_line_style={
-                "stroke_color": BLUE,
-                "stroke_width": 1,
-                "stroke_opacity": 0.2,
-            },
-        )
-        self.add(plane)
-
         # Create the grid with proper scaling
         grid = self.create_grid(data)
 
@@ -105,19 +93,22 @@ MXMXAXMASX"""
 
         # Words to search for (both forward and backward)
         target_words = ["XMAS", "SAMX"]
+        highlight = SurroundingRectangle(grid[0], color=YELLOW, buff=0.05)
 
         for word_index, word in enumerate(target_words):
             # Update search text for current word
             search_text.become(
                 Text(f"Searching for: {word}", font_size=24).to_edge(LEFT).to_edge(UP)
             )
-            highlight = SurroundingRectangle(grid[0], color=YELLOW, buff=0.05)
             for i in range(grid_size):
                 for j in range(grid_size):
                     # Create yellow highlight for current cell
                     current_cell_index = (i * grid_size + j) * 2
                     current_square = grid[current_cell_index]
-                    self.play(highlight.animate.move_to(current_square.get_center()))
+                    self.play(
+                        highlight.animate.move_to(current_square.get_center()),
+                        run_time=0.18,
+                    )
 
                     for dr, dc in directions:
                         # Check if pattern fits within grid
