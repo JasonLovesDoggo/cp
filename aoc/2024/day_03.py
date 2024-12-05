@@ -14,17 +14,17 @@ def parse_raw(raw: str):
 
 data = parse_raw(raw)
 
+
 # providing this default is somewhat of a hack - there isn't any other way to
 # force type inference to happen, AFAIK - but this won't work with standard
 # collections (list, set, dict, tuple)
 def part_one(data=data):
     total = 0
-    results = re.findall(r'(mul\([0-9]{1,3},[0-9]{1,3}\))', data)
+    results = re.findall(r"(mul\([0-9]{1,3},[0-9]{1,3}\))", data)
     for result in results:
         ints = extract_ints(result)
         total += ints[0] * ints[1]
     return total
-
 
 
 aoc_helper.lazy_test(day=3, year=2024, parse=parse_raw, solution=part_one)
@@ -50,7 +50,6 @@ def part_two(data=data):
         ints = extract_ints(result)
         total += ints[0] * ints[1]
     return total
-
 
 
 aoc_helper.lazy_test(day=3, year=2024, parse=parse_raw, solution=part_two)

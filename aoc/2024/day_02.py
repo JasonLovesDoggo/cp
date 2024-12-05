@@ -6,6 +6,7 @@ from aoc_helper import list, map, range
 def parse_raw(raw: str):
     return raw
 
+
 def check_report_safety(report: List[int]) -> bool:
     # Determine initial trend
     if len(report) < 2:
@@ -29,6 +30,7 @@ def check_report_safety(report: List[int]) -> bool:
 
     return True
 
+
 def part_one(data=None):
     if data is None:
         data = aoc_helper.fetch(2, 2024)
@@ -42,6 +44,7 @@ def part_one(data=None):
             N_safe += 1
 
     return N_safe
+
 
 def part_two(data=None):
     if data is None:
@@ -58,15 +61,16 @@ def part_two(data=None):
         else:
             # Try removing each level and check if it becomes safe
             for i in range(len(report)):
-                temp_report = report[:i] + report[i + 1:]
+                temp_report = report[:i] + report[i + 1 :]
                 if check_report_safety(temp_report):
                     N_safe += 1
                     break
 
     return N_safe
 
+
 # Main execution
-if __name__ == '__main__':
+if __name__ == "__main__":
     raw = aoc_helper.fetch(2, 2024)
     data = parse_raw(raw)
 

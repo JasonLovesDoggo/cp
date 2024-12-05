@@ -1,4 +1,3 @@
-
 import aoc_helper
 
 
@@ -7,6 +6,7 @@ raw = aoc_helper.fetch(1, 2024)
 
 def parse_raw(raw: str):
     return raw
+
 
 results = [[], []]
 
@@ -48,6 +48,7 @@ def part_two(data=data):
         total_similarity += n * results[1].count(n)
 
     return total_similarity
+
 
 aoc_helper.lazy_test(day=1, year=2024, parse=parse_raw, solution=part_two)
 
