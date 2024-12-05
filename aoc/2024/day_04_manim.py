@@ -49,7 +49,7 @@ MXMXAXMASX"""
         matches = Text("Matches: ", font_size=24).next_to(search_text, DOWN)
         self.add(matches)
 
-        match_num = Text("0", font_size=24).next_to(matches, RIGHT)
+        match_num = Integer(0, font_size=24).next_to(matches, RIGHT)
         self.add(match_num)
 
         # Find and highlight XMAS patterns
@@ -112,7 +112,7 @@ MXMXAXMASX"""
                     # Create yellow highlight for current cell
                     current_cell_index = (i * grid_size + j) * 2
                     current_square = grid[current_cell_index]
-                    self.play(highlight.animate.shift(current_square.get_center()))
+                    self.play(highlight.animate.move_to(current_square.get_center()))
 
                     for dr, dc in directions:
                         # Check if pattern fits within grid
@@ -145,17 +145,14 @@ MXMXAXMASX"""
                                 xmas_count += 1
                                 self.play(
                                     Create(pattern_polygon),
-                                    matches_num.animate.become(
-                                        Text(f"{xmas_count}", font_size=24).next_to(matches, RIGHT)
-                                    )
+                                    matches_num.animate.set_value(xmas_count)
                                 )
 
                                 # Wait for 0.05 second to show the match
-                                self.wait(0.05)
+                                self.wait(0.001)
 
                                 # Remove the polygon
                                 self.play(FadeOut(pattern_polygon))
-                    # self.remove(highlight)
 
         return xmas_count
 
@@ -190,7 +187,3 @@ MXMXAXMASX"""
             pattern_squares.add(grid[grid_index])
         return pattern_squares
 
-# To render the animation
-if __name__ == "__main__":
-    scene = SearchVisualization()
-    scene.render()
